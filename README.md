@@ -3,3 +3,6 @@ This automated technical SEO checklist will help you check your on-page SEO in a
 
 
 **WIP**
+
+#Demo
+![](terminal.gif)
