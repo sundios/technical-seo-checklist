@@ -291,7 +291,7 @@ def indexation_status(url,df):
         else:
             url_indexed = False
 
-        # Print the result
+        # Print the resultss
         if url_indexed:
             print(f"{url} is indexed in Google. ✅")
             a = f"{url} is indexed in Google. ✅"
