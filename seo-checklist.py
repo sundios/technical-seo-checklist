@@ -283,14 +283,12 @@ def indexation_status(url,df):
         soup = BeautifulSoup(response.text, "html.parser")
 
         # Find the search result divs
-        search_results = soup.select('div.g')
+        search_results = soup.find('a', href=True, attrs={'data-ved': True, 'jsname': 'ACyKwe'})
 
-        # Check if the URL is present in any of the search result divs
-        url_indexed = False
-        for result in search_results:
-            if url in str(result):
-                url_indexed = True
-                break
+        if url in str(search_results):
+            url_indexed = True
+        else:
+            url_indexed = False
 
         # Print the result
         if url_indexed:
