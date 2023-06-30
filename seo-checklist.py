@@ -279,6 +279,7 @@ def indexation_status(url,df):
         # Make the HTTP GET request to Google with the user agent header
         response = requests.get(google_url, headers=headers)
 
+
         # Parse the HTML using BS4
         soup = BeautifulSoup(response.text, "html.parser")
 
