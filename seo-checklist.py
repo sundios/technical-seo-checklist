@@ -17,6 +17,10 @@ from termcolor import colored
 # Import the halo module
 from halo import Halo
 
+import json
+
+
+
 #https://www.semrush.com/blog/on-page-seo-checklist
 
 # URL of the page you want to check
@@ -58,7 +62,7 @@ def checklist(url):
     df = robots_meta_tag(url,df)
     df = check_x_robots_tag_noindex(url,df)
     df = check_canonical(url,df)
-    #df = check_schema(url, df)
+    df = check_schema_org(url, df)
     df = core_web_vitals(url, df)
     
     
@@ -491,9 +495,56 @@ def check_canonical(url,df):
         
     return df  
 
-def check_schema(url,df):
-    #TBD
-    a=a
+def check_schema_org(url, df):
+    print(colored("- Schema.org Check -", 'black', attrs=['bold']))
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            schema_types = set()
+
+            # JSON-LD
+            for script_tag in soup.find_all('script', type='application/ld+json'):
+                try:
+                    data = json.loads(script_tag.string)
+                    if isinstance(data, list):
+                        for item in data:
+                            if '@type' in item:
+                                schema_types.add(item['@type'])
+                    elif '@type' in data:
+                        schema_types.add(data['@type'])
+                except json.JSONDecodeError:
+                    pass
+
+            # Microdata
+            for microdata_tag in soup.find_all(attrs={"itemtype": True}):
+                schema_types.add(microdata_tag['itemtype'])
+
+            # RDFa
+            for rdfa_tag in soup.find_all(attrs={"typeof": True}):
+                schema_types.add(rdfa_tag['typeof'])
+
+            if schema_types:
+                print(f"The URL {url} has schema.org structure(s): {', '.join(schema_types)} ✅")
+                a = f"The URL {url} has schema.org structure(s): {', '.join(schema_types)} ✅"
+            else:
+                print(f"The URL {url} does not have any identifiable schema.org structures ❌")
+                a = f"The URL {url} does not have any identifiable schema.org structures ❌"
+        else:
+            print(f"The URL {url} could not be accessed. The page has a status code of {response.status_code} ❌")
+            a = f"The URL {url} could not be accessed. The page has a status code of {response.status_code} ❌"
+
+    except requests.exceptions.RequestException as e:
+        print(f"Schema.org check failed with errors: {e} 🚫")
+        a = f"Schema.org check failed with errors: {e} 🚫"
+
+    # Create a new DataFrame with the row(s) to append
+    new_row = pd.DataFrame({"Schema.org": [a]})
+
+    # Concatenate the new DataFrame with the existing DataFrame
+    df = pd.concat([df, new_row], axis=1)
+
+    return df
     
     
    
