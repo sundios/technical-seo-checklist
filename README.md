@@ -12,7 +12,7 @@ Work in progress.
 - Robots meta tag
 - X Robots tag
 - Canonicals
-- Schema (**WIP**)
+- Schema 
 - Core Web Vitals
 
 ## Usage
