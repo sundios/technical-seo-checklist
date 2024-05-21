@@ -40,7 +40,7 @@ def checklist(url):
     Returns
     -------
     None.
-
+W
     '''
     
     #making sure URL has https
@@ -268,7 +268,7 @@ def indexation_status(url,df):
     pandas.DataFrame: The updated pandas DataFrame.
 
     '''
-    print(colored(f"- Is the Page indexed in Google?" ,'black',attrs=['bold']))
+    print(colored("- Is the Page indexed in Google?" ,'black',attrs=['bold']))
     try:
         # Define the search query
         query = f"site:{url}"
@@ -287,13 +287,10 @@ def indexation_status(url,df):
         # Parse the HTML using BS4
         soup = BeautifulSoup(response.text, "html.parser")
 
-        # Find the search result divs
-        search_results = soup.find('a', href=True, attrs={'data-ved': True, 'jsname': 'ACyKwe'})
+        # Check for search results containing the URL
+        search_results = soup.find_all('a', href=True)
 
-        if url in str(search_results):
-            url_indexed = True
-        else:
-            url_indexed = False
+        url_indexed = any(url in link['href'] for link in search_results)
 
         # Print the resultss
         if url_indexed:
@@ -321,10 +318,6 @@ def indexation_status(url,df):
         df = pd.concat([df, new_row], axis=1)  
         
     return df
-
-
-
-
 
 def bot_accessibility(url,df):
     # Set the user agents for Googlebot and Bingbot
